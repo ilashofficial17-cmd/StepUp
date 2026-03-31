@@ -1,6 +1,7 @@
-from aiogram import Bot, Dispatcher, types
-from aiogram.utils import executor
+import asyncio
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.filters import Command
 
 # ==========================
 # Настройки бота
@@ -8,18 +9,20 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 API_TOKEN = "BOT_TOKEN"
 
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 # ==========================
 # Клавиатура
 # ==========================
-keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-keyboard.add(KeyboardButton("Продолжить"))
+keyboard = ReplyKeyboardMarkup(
+    keyboard=[[KeyboardButton(text="Продолжить")]],
+    resize_keyboard=True
+)
 
 # ==========================
 # Хэндлер на команду /start
 # ==========================
-@dp.message_handler(commands=["start"])
+@dp.message(Command("start"))
 async def send_welcome(message: types.Message):
     text = (
         "Привет! 👋 Добро пожаловать в StepUp!\n\n"
@@ -36,7 +39,7 @@ async def send_welcome(message: types.Message):
 # ==========================
 # Хэндлер на кнопку "Продолжить"
 # ==========================
-@dp.message_handler(lambda message: message.text == "Продолжить")
+@dp.message(F.text == "Продолжить")
 async def continue_module(message: types.Message):
     text = "Отлично! 🌟 Дальше пойдёт первый модуль (пока заглушка)."
     await message.answer(text)
@@ -44,5 +47,8 @@ async def continue_module(message: types.Message):
 # ==========================
 # Запуск бота
 # ==========================
+async def main():
+    await dp.start_polling(bot, skip_updates=True)
+
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
