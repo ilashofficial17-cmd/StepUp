@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
-from content.courses import COURSES_BY_ID
-from keyboards.inline import courses_list_kb, course_detail_kb, back_to_courses_kb
+from content.courses import COURSES_BY_ID, CATEGORIES_BY_ID
+from keyboards.inline import courses_main_kb, category_courses_kb, course_detail_kb, back_to_courses_kb
 from database.db import get_or_create_user, get_user_progress, start_course
 
 router = Router()
@@ -10,8 +10,8 @@ router = Router()
 @router.message(F.text == "📚 Курсы")
 async def msg_courses(message: Message):
     await message.answer(
-        "📚 *Список курсов*\n\nВыбери курс, чтобы узнать подробнее:",
-        reply_markup=courses_list_kb(),
+        "📚 *Список курсов*\n\nВыбери категорию или начни с бесплатного курса:",
+        reply_markup=courses_main_kb(),
         parse_mode="Markdown",
     )
 
@@ -46,8 +46,24 @@ async def msg_progress(message: Message):
 @router.callback_query(F.data == "courses")
 async def cb_courses(callback: CallbackQuery):
     await callback.message.edit_text(
-        "📚 *Список курсов*\n\nВыбери курс, чтобы узнать подробнее:",
-        reply_markup=courses_list_kb(),
+        "📚 *Список курсов*\n\nВыбери категорию или начни с бесплатного курса:",
+        reply_markup=courses_main_kb(),
+        parse_mode="Markdown",
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("category:"))
+async def cb_category(callback: CallbackQuery):
+    category_id = callback.data.split(":")[1]
+    category = CATEGORIES_BY_ID.get(category_id)
+    if not category:
+        await callback.answer("Категория не найдена", show_alert=True)
+        return
+
+    await callback.message.edit_text(
+        f"{category['emoji']} *{category['title']}*\n\nВыбери курс:",
+        reply_markup=category_courses_kb(category_id),
         parse_mode="Markdown",
     )
     await callback.answer()
@@ -68,7 +84,7 @@ async def cb_course_detail(callback: CallbackQuery):
 
     await callback.message.edit_text(
         text,
-        reply_markup=course_detail_kb(course_id, course["is_free"]),
+        reply_markup=course_detail_kb(course_id, course["is_free"], course["category"]),
         parse_mode="Markdown",
     )
     await callback.answer()
