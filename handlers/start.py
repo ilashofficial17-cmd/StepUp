@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from database.db import get_or_create_user
 from keyboards.reply import main_menu_kb
 
@@ -10,7 +10,7 @@ WELCOME_TEXT = (
     "Привет! 👋 Добро пожаловать в *StepUp*!\n\n"
     "Мы делаем обучение маркетингу, SMM, таргету и "
     "автоматизации простым и понятным. 🚀\n\n"
-    "Используй кнопки внизу для навигации:"
+    "Выбери категорию внизу 👇"
 )
 
 

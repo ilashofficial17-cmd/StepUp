@@ -1,23 +1,56 @@
 CATEGORIES = [
+    {"id": "promo",    "title": "Продвижение и контент", "emoji": "📣", "btn": "📣 Продвижение"},
+    {"id": "business", "title": "Бизнес и продажи",      "emoji": "💼", "btn": "💼 Бизнес"},
+    {"id": "tech",     "title": "Технологии",             "emoji": "🤖", "btn": "🤖 Технологии"},
+]
+
+CATEGORIES_BY_ID  = {c["id"]: c for c in CATEGORIES}
+CATEGORIES_BY_BTN = {c["btn"]: c for c in CATEGORIES}
+
+# ==========================
+# Модули и уроки курса «Первый шаг»
+# ==========================
+INTRO_MODULES = [
     {
-        "id": "promo",
-        "title": "Продвижение и контент",
+        "id": "m1",
+        "title": "Как устроен онлайн-рынок",
+        "emoji": "🌐",
+        "lessons": [
+            {"id": "m1l1", "title": "Что такое digital и почему сейчас самое время"},
+            {"id": "m1l2", "title": "Кто платит деньги и за что"},
+            {"id": "m1l3", "title": "Какие профессии есть и сколько зарабатывают"},
+        ],
+        "has_quiz": True,
+    },
+    {
+        "id": "m2",
+        "title": "Трафик и контент",
         "emoji": "📣",
+        "lessons": [
+            {"id": "m2l1", "title": "SMM — как бренды живут в соцсетях"},
+            {"id": "m2l2", "title": "Реклама и таргет — как бизнес находит клиентов"},
+            {"id": "m2l3", "title": "Контент и копирайтинг — слова, которые продают"},
+        ],
+        "has_quiz": True,
     },
     {
-        "id": "business",
-        "title": "Бизнес и продажи",
-        "emoji": "💼",
-    },
-    {
-        "id": "tech",
-        "title": "Технологии",
-        "emoji": "🤖",
+        "id": "m3",
+        "title": "Продажи и технологии",
+        "emoji": "⚙️",
+        "lessons": [
+            {"id": "m3l1", "title": "Воронки и CRM — как продавать системно"},
+            {"id": "m3l2", "title": "No-code и AI — делать в 10 раз больше"},
+            {"id": "m3l3", "title": "Личный бренд и фриланс — продавать себя"},
+        ],
+        "has_quiz": True,
     },
 ]
 
-CATEGORIES_BY_ID = {c["id"]: c for c in CATEGORIES}
+INTRO_MODULES_BY_ID = {m["id"]: m for m in INTRO_MODULES}
 
+# ==========================
+# Список всех курсов
+# ==========================
 COURSES = [
     {
         "id": "intro",
@@ -27,10 +60,10 @@ COURSES = [
         "category": None,
         "description": (
             "Вводный курс в мир онлайн-маркетинга и заработка в интернете.\n\n"
-            "За 7 уроков ты познакомишься с каждым направлением, поймёшь "
-            "как устроена сфера и выберешь то, что тебе ближе всего."
+            "3 модуля · 9 уроков · тесты после каждого модуля\n\n"
+            "Пройди и узнай какое направление тебе подходит."
         ),
-        "lessons_count": 7,
+        "modules": INTRO_MODULES,
     },
     {
         "id": "smm",
@@ -39,7 +72,7 @@ COURSES = [
         "is_free": False,
         "category": "promo",
         "description": "Ведение соцсетей, контент-стратегия, работа с аудиторией и аналитика.",
-        "lessons_count": 0,
+        "modules": [],
     },
     {
         "id": "target",
@@ -47,8 +80,8 @@ COURSES = [
         "emoji": "🎯",
         "is_free": False,
         "category": "promo",
-        "description": "Настройка рекламы в VK, Telegram Ads, Meta. Аналитика и оптимизация кампаний.",
-        "lessons_count": 0,
+        "description": "Настройка рекламы в VK, Telegram Ads, Meta. Аналитика и оптимизация.",
+        "modules": [],
     },
     {
         "id": "content",
@@ -56,8 +89,8 @@ COURSES = [
         "emoji": "✍️",
         "is_free": False,
         "category": "promo",
-        "description": "Контент-стратегия, редполитика, дистрибуция и продвижение через контент.",
-        "lessons_count": 0,
+        "description": "Контент-стратегия, редполитика, дистрибуция и продвижение.",
+        "modules": [],
     },
     {
         "id": "copy",
@@ -65,8 +98,8 @@ COURSES = [
         "emoji": "📝",
         "is_free": False,
         "category": "promo",
-        "description": "Продающие тексты, посты, лендинги. Пишем так, чтобы читали и покупали.",
-        "lessons_count": 0,
+        "description": "Продающие тексты, посты, лендинги. Пишем так, чтобы покупали.",
+        "modules": [],
     },
     {
         "id": "email",
@@ -74,8 +107,8 @@ COURSES = [
         "emoji": "📧",
         "is_free": False,
         "category": "promo",
-        "description": "Рассылки, автоворонки, сегментация базы и аналитика open rate / CTR.",
-        "lessons_count": 0,
+        "description": "Рассылки, автоворонки, сегментация базы и аналитика.",
+        "modules": [],
     },
     {
         "id": "influence",
@@ -83,8 +116,8 @@ COURSES = [
         "emoji": "🌟",
         "is_free": False,
         "category": "promo",
-        "description": "Работа с блогерами, посевы, коллаборации и оценка эффективности размещений.",
-        "lessons_count": 0,
+        "description": "Работа с блогерами, посевы, коллаборации и оценка эффективности.",
+        "modules": [],
     },
     {
         "id": "sales",
@@ -92,8 +125,8 @@ COURSES = [
         "emoji": "⚙️",
         "is_free": False,
         "category": "business",
-        "description": "CRM-системы, чат-боты, воронки продаж. Автоматизируй бизнес и продавай пока спишь.",
-        "lessons_count": 0,
+        "description": "CRM, чат-боты, воронки продаж. Продавай системно и автоматически.",
+        "modules": [],
     },
     {
         "id": "ecom",
@@ -101,8 +134,8 @@ COURSES = [
         "emoji": "🛒",
         "is_free": False,
         "category": "business",
-        "description": "Продажи на Ozon и Wildberries: карточки, реклама, аналитика и масштабирование.",
-        "lessons_count": 0,
+        "description": "Продажи на Ozon и Wildberries: карточки, реклама, масштабирование.",
+        "modules": [],
     },
     {
         "id": "freelance",
@@ -110,8 +143,8 @@ COURSES = [
         "emoji": "💼",
         "is_free": False,
         "category": "business",
-        "description": "Упакуй себя как специалиста, найди первых клиентов и выстрой стабильный доход.",
-        "lessons_count": 0,
+        "description": "Упакуй себя как специалиста, найди клиентов и выстрой доход.",
+        "modules": [],
     },
     {
         "id": "brand",
@@ -119,8 +152,8 @@ COURSES = [
         "emoji": "⭐",
         "is_free": False,
         "category": "business",
-        "description": "Позиционирование, экспертность, работа с аудиторией и монетизация личного бренда.",
-        "lessons_count": 0,
+        "description": "Позиционирование, экспертность и монетизация личного бренда.",
+        "modules": [],
     },
     {
         "id": "nocode",
@@ -128,8 +161,8 @@ COURSES = [
         "emoji": "🔧",
         "is_free": False,
         "category": "tech",
-        "description": "Make, n8n, Zapier — автоматизируй бизнес-процессы без единой строчки кода.",
-        "lessons_count": 0,
+        "description": "Make, n8n, Zapier — автоматизируй процессы без кода.",
+        "modules": [],
     },
     {
         "id": "vibe",
@@ -137,8 +170,8 @@ COURSES = [
         "emoji": "🤖",
         "is_free": False,
         "category": "tech",
-        "description": "Создавай продукты с помощью ИИ: Cursor, Claude, v0. Без опыта в разработке.",
-        "lessons_count": 0,
+        "description": "Создавай продукты с ИИ: Cursor, Claude, v0. Без опыта в разработке.",
+        "modules": [],
     },
 ]
 
