@@ -2,13 +2,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from content.courses import COURSES
 
 
-def main_menu_kb() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📚 Курсы", callback_data="courses")],
-        [InlineKeyboardButton(text="📊 Мой прогресс", callback_data="progress")],
-    ])
-
-
 def courses_list_kb() -> InlineKeyboardMarkup:
     buttons = []
     for course in COURSES:
@@ -17,7 +10,6 @@ def courses_list_kb() -> InlineKeyboardMarkup:
         else:
             label = f"{course['emoji']} {course['title']} — Скоро"
         buttons.append([InlineKeyboardButton(text=label, callback_data=f"course:{course['id']}")])
-    buttons.append([InlineKeyboardButton(text="⬅️ Назад", callback_data="main_menu")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
@@ -31,8 +23,7 @@ def course_detail_kb(course_id: str, is_free: bool) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def back_to_menu_kb() -> InlineKeyboardMarkup:
+def back_to_courses_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📚 К курсам", callback_data="courses")],
-        [InlineKeyboardButton(text="🏠 Главное меню", callback_data="main_menu")],
+        [InlineKeyboardButton(text="⬅️ К списку курсов", callback_data="courses")],
     ])
