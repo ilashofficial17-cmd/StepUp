@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from states.learning import LearningState
 from ai.tutor import get_tutor_reply, generate_lesson_summary
-from database.db import get_or_create_user, save_message, get_conversation, save_lesson_summary
+from database.db import get_or_create_user, save_message, get_conversation, save_lesson_summary, get_course_summaries
 from keyboards.reply import main_menu_kb
 
 log = logging.getLogger(__name__)
@@ -65,6 +65,8 @@ async def handle_lesson_message(message: Message, state: FSMContext):
 
     thinking = await message.answer("✍️ Репетитор печатает...")
 
+    student_history = await get_course_summaries(user_db_id, course_id)
+
     try:
         reply = await get_tutor_reply(
             course_title=course_title,
@@ -74,6 +76,7 @@ async def handle_lesson_message(message: Message, state: FSMContext):
             user_message=message.text,
             lesson_plan=lesson_plan,
             lesson_terms=lesson_terms,
+            student_history=student_history or None,
         )
     except Exception as e:
         await thinking.delete()

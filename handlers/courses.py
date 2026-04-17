@@ -10,7 +10,7 @@ from keyboards.inline import (
 from keyboards.reply import lesson_kb
 from database.db import (
     get_or_create_user, get_user_progress, start_course, save_message,
-    get_last_lesson, update_lesson_progress,
+    get_last_lesson, update_lesson_progress, get_course_summaries,
 )
 from states.learning import LearningState
 from ai.tutor import start_lesson
@@ -195,12 +195,14 @@ async def cb_begin_lesson(callback: CallbackQuery, state: FSMContext):
     await update_lesson_progress(user_db_id, course_id, module_id, lesson_id)
 
     try:
+        student_history = await get_course_summaries(user_db_id, course_id)
         intro = await start_lesson(
             course_title=course["title"],
             module_title=module["title"],
             lesson_title=lesson["title"],
             lesson_plan=lesson.get("plan", ""),
             lesson_terms=lesson.get("terms", ""),
+            student_history=student_history or None,
         )
         await save_message(user_db_id, course_id, module_id, lesson_id, "assistant", intro)
         await callback.message.answer(intro)

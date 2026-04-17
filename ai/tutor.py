@@ -44,9 +44,10 @@ async def start_lesson(
     lesson_title: str,
     lesson_plan: str = "",
     lesson_terms: str = "",
+    student_history: list[dict] | None = None,
 ) -> str:
     system_prompt = get_lesson_system_prompt(
-        course_title, module_title, lesson_title, lesson_plan, lesson_terms
+        course_title, module_title, lesson_title, lesson_plan, lesson_terms, student_history
     )
     messages = [
         {"role": "system", "content": system_prompt},
@@ -63,9 +64,10 @@ async def get_tutor_reply(
     user_message: str,
     lesson_plan: str = "",
     lesson_terms: str = "",
+    student_history: list[dict] | None = None,
 ) -> str:
     system_prompt = get_lesson_system_prompt(
-        course_title, module_title, lesson_title, lesson_plan, lesson_terms
+        course_title, module_title, lesson_title, lesson_plan, lesson_terms, student_history
     )
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(history)

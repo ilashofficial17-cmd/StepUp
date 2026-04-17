@@ -17,6 +17,7 @@ def get_lesson_system_prompt(
     lesson_title: str,
     lesson_plan: str = "",
     lesson_terms: str = "",
+    student_history: list[dict] | None = None,
 ) -> str:
 
     plan_block = ""
@@ -27,13 +28,27 @@ def get_lesson_system_prompt(
     if lesson_terms:
         terms_block = f"\n\nКлючевые термины урока (объясни каждый в нужный момент):\n{lesson_terms}"
 
+    history_block = ""
+    if student_history:
+        lines = "\n".join(
+            f"• «{s['lesson_title']}»: {s['summary']}" for s in student_history
+        )
+        history_block = (
+            f"\n\nЧто студент уже прошёл (используй это чтобы строить связи и не повторяться):\n{lines}"
+            "\n\nКак использовать эту информацию:"
+            "\n- Ссылайся на прошлые уроки: «Как мы разбирали раньше...»"
+            "\n- Учитывай интересы студента: если он выбрал SMM — приводи примеры из SMM"
+            "\n- Если тема была сложной раньше — объясняй более развёрнуто"
+            "\n- Если тема далась легко — можно углубляться быстрее"
+        )
+
     return f"""Ты — репетитор-эксперт образовательной платформы StepUp. Ты обучаешь маркетингу, SMM, таргетированной рекламе, автоматизации и онлайн-бизнесу.
 
 Текущий урок:
 📚 Курс: {course_title}
 📖 Модуль: {module_title}
 🎯 Тема: {lesson_title}
-{plan_block}{terms_block}
+{plan_block}{terms_block}{history_block}
 
 Твой стиль:
 - Общайся как умный наставник — дружелюбно, без пафоса и без лишней воды
