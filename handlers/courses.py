@@ -8,7 +8,10 @@ from keyboards.inline import (
     modules_kb, lessons_kb, lesson_info_kb, back_to_modules_kb,
 )
 from keyboards.reply import lesson_kb
-from database.db import get_or_create_user, get_user_progress, start_course, save_message
+from database.db import (
+    get_or_create_user, get_user_progress, start_course, save_message,
+    get_last_lesson, update_lesson_progress,
+)
 from states.learning import LearningState
 from ai.tutor import start_lesson
 
@@ -103,9 +106,12 @@ async def cb_modules(callback: CallbackQuery):
         full_name=callback.from_user.full_name or "",
     )
     await start_course(user_db_id, course_id)
+    last_lesson = await get_last_lesson(user_db_id, course_id)
+    text = f"📋 *{course['title']}*\n\n"
+    text += "Продолжи с места где остановился 👇" if last_lesson else "Выбери модуль:"
     await callback.message.edit_text(
-        f"📋 *{course['title']}*\n\nВыбери модуль:",
-        reply_markup=modules_kb(course_id),
+        text,
+        reply_markup=modules_kb(course_id, last_lesson),
         parse_mode="Markdown",
     )
     await callback.answer()
@@ -186,6 +192,7 @@ async def cb_begin_lesson(callback: CallbackQuery, state: FSMContext):
         username=callback.from_user.username or "",
         full_name=callback.from_user.full_name or "",
     )
+    await update_lesson_progress(user_db_id, course_id, module_id, lesson_id)
 
     try:
         intro = await start_lesson(

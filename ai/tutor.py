@@ -1,7 +1,7 @@
 import logging
 import aiohttp
 from config import OPENROUTER_API_KEY, OPENROUTER_MODEL, OPENROUTER_BASE_URL
-from ai.prompts import get_lesson_system_prompt
+from ai.prompts import get_lesson_system_prompt, get_summary_prompt
 
 log = logging.getLogger(__name__)
 
@@ -71,3 +71,18 @@ async def get_tutor_reply(
     messages.extend(history)
     messages.append({"role": "user", "content": user_message})
     return await _call(messages)
+
+
+async def generate_lesson_summary(lesson_title: str, history: list[dict]) -> str:
+    """Генерирует краткое резюме урока для памяти репетитора."""
+    if not history:
+        return f"Урок '{lesson_title}' был начат, но диалог не состоялся."
+    messages = [
+        {"role": "system", "content": get_summary_prompt()},
+        *history,
+        {"role": "user", "content": f"Составь резюме этого урока на тему: {lesson_title}"},
+    ]
+    try:
+        return await _call(messages)
+    except Exception:
+        return f"Урок '{lesson_title}' пройден."

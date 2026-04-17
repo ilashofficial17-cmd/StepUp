@@ -21,9 +21,19 @@ def course_detail_kb(course_id: str, is_free: bool, category_id: str | None) -> 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def modules_kb(course_id: str) -> InlineKeyboardMarkup:
+def modules_kb(course_id: str, last_lesson: dict | None = None) -> InlineKeyboardMarkup:
     course = COURSES_BY_ID.get(course_id)
     buttons = []
+    if last_lesson:
+        module_id = last_lesson["module_id"]
+        lesson_id = last_lesson["lesson_id"]
+        module = next((m for m in course["modules"] if m["id"] == module_id), None)
+        lesson = next((l for l in module["lessons"] if l["id"] == lesson_id), None) if module else None
+        if lesson:
+            buttons.append([InlineKeyboardButton(
+                text=f"▶️ Продолжить: {lesson['title']}",
+                callback_data=f"lesson:{course_id}:{module_id}:{lesson_id}",
+            )])
     for module in course.get("modules", []):
         lessons_count = len(module["lessons"])
         quiz = " + тест" if module["has_quiz"] else ""
