@@ -106,6 +106,25 @@ def lesson_info_kb(
     ])
 
 
+def complete_lesson_kb(course_id: str, module_id: str, lesson_id: str) -> InlineKeyboardMarkup:
+    """Инлайн-кнопка которая появляется когда AI сигналит об окончании урока."""
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text="✅ Завершить урок",
+            callback_data=f"complete:{course_id}:{module_id}:{lesson_id}",
+        )],
+    ])
+
+
+def continue_course_kb(course_id: str, module_id: str, lesson_id: str, title: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(
+            text=f"▶️ Продолжить: {title}",
+            callback_data=f"lesson:{course_id}:{module_id}:{lesson_id}",
+        )],
+    ])
+
+
 def after_lesson_kb(
     course_id: str,
     module_id: str,

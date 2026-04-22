@@ -14,10 +14,10 @@ def main_menu_kb() -> ReplyKeyboardMarkup:
 
 
 def lesson_kb() -> ReplyKeyboardMarkup:
-    """Клавиатура во время урока — только выход."""
+    """Клавиатура во время урока — пауза (прогресс не теряется)."""
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="🚪 Завершить урок")],
+            [KeyboardButton(text="⏸ На паузу")],
         ],
         resize_keyboard=True,
         persistent=True,
