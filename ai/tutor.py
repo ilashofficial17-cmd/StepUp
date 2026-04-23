@@ -41,13 +41,13 @@ HEADERS = {
 }
 
 
-async def _call(messages: list) -> str:
+async def _call(messages: list, model: str | None = None) -> str:
     if not OPENROUTER_API_KEY:
         raise ValueError("OPENROUTER_API_KEY не задан в переменных окружения")
 
     headers = {**HEADERS, "Authorization": f"Bearer {OPENROUTER_API_KEY}"}
     payload = {
-        "model": OPENROUTER_MODEL,
+        "model": model or OPENROUTER_MODEL,
         "messages": messages,
         "max_tokens": 1200,
         "temperature": 0.7,
@@ -75,6 +75,7 @@ async def start_lesson(
     lesson_terms: str = "",
     student_history: list[dict] | None = None,
     student_profile: dict | None = None,
+    model: str | None = None,
 ) -> str:
     system_prompt = get_lesson_system_prompt(
         course_title, module_title, lesson_title,
@@ -86,7 +87,7 @@ async def start_lesson(
         {"role": "system", "content": system_prompt},
         {"role": "user",   "content": "Начинаем урок!"},
     ]
-    return await _call(messages)
+    return await _call(messages, model=model)
 
 
 async def get_tutor_reply(
@@ -99,6 +100,7 @@ async def get_tutor_reply(
     lesson_terms: str = "",
     student_history: list[dict] | None = None,
     student_profile: dict | None = None,
+    model: str | None = None,
 ) -> str:
     system_prompt = get_lesson_system_prompt(
         course_title, module_title, lesson_title,
@@ -109,7 +111,7 @@ async def get_tutor_reply(
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(history)
     messages.append({"role": "user", "content": user_message})
-    return await _call(messages)
+    return await _call(messages, model=model)
 
 
 async def generate_lesson_summary(lesson_title: str, history: list[dict]) -> str:

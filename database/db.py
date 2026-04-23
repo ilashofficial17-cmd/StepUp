@@ -93,6 +93,19 @@ async def init_db():
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS user_courses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                course_id TEXT NOT NULL,
+                source TEXT NOT NULL,
+                amount_usd REAL,
+                payment_ref TEXT,
+                granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id),
+                UNIQUE(user_id, course_id)
+            )
+        """)
         # Migrate existing progress table if columns missing
         try:
             await db.execute("ALTER TABLE progress ADD COLUMN last_module_id TEXT DEFAULT NULL")
@@ -452,6 +465,54 @@ async def get_quiz_result(
         if not row:
             return None
         return {"score": row[0], "total": row[1], "passed": bool(row[2])}
+
+
+# ==========================
+# Доступ к курсам (платные)
+# ==========================
+
+async def has_course_access(user_id: int, course_id: str) -> bool:
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "SELECT 1 FROM user_courses WHERE user_id = ? AND course_id = ? LIMIT 1",
+            (user_id, course_id),
+        )
+        return (await cursor.fetchone()) is not None
+
+
+async def grant_course_access(
+    user_id: int,
+    course_id: str,
+    source: str = "admin",
+    amount_usd: float | None = None,
+    payment_ref: str | None = None,
+) -> None:
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            """INSERT OR IGNORE INTO user_courses
+               (user_id, course_id, source, amount_usd, payment_ref)
+               VALUES (?, ?, ?, ?, ?)""",
+            (user_id, course_id, source, amount_usd, payment_ref),
+        )
+        await db.commit()
+
+
+async def get_user_telegram_id(user_id: int) -> int | None:
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "SELECT telegram_id FROM users WHERE id = ?", (user_id,)
+        )
+        row = await cursor.fetchone()
+        return row[0] if row else None
+
+
+async def get_user_by_telegram_id(telegram_id: int) -> int | None:
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "SELECT id FROM users WHERE telegram_id = ?", (telegram_id,)
+        )
+        row = await cursor.fetchone()
+        return row[0] if row else None
 
 
 # ==========================
