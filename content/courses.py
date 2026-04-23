@@ -401,6 +401,9 @@ INTRO_MODULES = [
 
 INTRO_MODULES_BY_ID = {m["id"]: m for m in INTRO_MODULES}
 
+from content.paid_target import TARGET_COURSE, TARGET_QUIZZES
+
+
 COURSES = [
     {
         "id": "intro",
@@ -416,7 +419,7 @@ COURSES = [
         "modules": INTRO_MODULES,
     },
     {"id": "smm",       "title": "SMM-специалист",          "emoji": "📱", "is_free": False, "category": "promo",     "description": "Ведение соцсетей, контент-стратегия, работа с аудиторией и аналитика.", "modules": []},
-    {"id": "target",    "title": "Таргетолог",               "emoji": "🎯", "is_free": False, "category": "promo",     "description": "Настройка рекламы в VK, Telegram Ads, Meta. Аналитика и оптимизация.", "modules": []},
+    TARGET_COURSE,
     {"id": "content",   "title": "Контент-маркетинг",        "emoji": "✍️", "is_free": False, "category": "promo",     "description": "Контент-стратегия, редполитика, дистрибуция и продвижение.", "modules": []},
     {"id": "copy",      "title": "Копирайтинг",              "emoji": "📝", "is_free": False, "category": "promo",     "description": "Продающие тексты, посты, лендинги. Пишем так, чтобы покупали.", "modules": []},
     {"id": "email",     "title": "Email-маркетинг",          "emoji": "📧", "is_free": False, "category": "promo",     "description": "Рассылки, автоворонки, сегментация базы и аналитика.", "modules": []},
@@ -445,6 +448,7 @@ def get_courses_by_category(category_id: str) -> list:
 QUIZ_PASS_THRESHOLD = 2  # минимум правильных ответов из 3
 
 QUIZZES = {
+    "target": TARGET_QUIZZES,
     "intro": {
         "m1": [
             {
