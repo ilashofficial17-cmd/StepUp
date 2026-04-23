@@ -212,6 +212,7 @@ async def handle_lesson_message(message: Message, state: FSMContext):
     lesson_title  = data["lesson_title"]
     lesson_plan   = data.get("lesson_plan", "")
     lesson_terms  = data.get("lesson_terms", "")
+    ai_model      = data.get("ai_model")
 
     # Быстрые ответы — подставляем полноценную реплику для AI,
     # сохраняем её же в истории, чтобы AI видел чёткий запрос.
@@ -243,6 +244,7 @@ async def handle_lesson_message(message: Message, state: FSMContext):
             lesson_terms=lesson_terms,
             student_history=student_history or None,
             student_profile=student_profile,
+            model=ai_model,
         )
     except Exception as e:
         log.error("Tutor reply error: %s", e)

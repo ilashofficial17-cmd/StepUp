@@ -25,6 +25,8 @@ from database.db import (
     get_student_conspect,
     get_user_profile,
     get_user_progress,
+    grant_course_access,
+    has_course_access,
     is_profile_complete,
     list_user_conspects,
     reset_quiz,
@@ -135,11 +137,39 @@ async def cb_course_detail(callback: CallbackQuery):
     if not course:
         await callback.answer("Курс не найден", show_alert=True)
         return
-    tag = "🆓 БЕСПЛАТНО" if course["is_free"] else "🔒 Скоро"
+
+    user_db_id = await get_or_create_user(
+        telegram_id=callback.from_user.id,
+        username=callback.from_user.username or "",
+        full_name=callback.from_user.full_name or "",
+    )
+
+    is_free = course["is_free"]
+    has_modules = bool(course.get("modules"))
+    access = False
+    if not is_free and has_modules:
+        access = await has_course_access(user_db_id, course_id)
+
+    if is_free:
+        tag = "🆓 БЕСПЛАТНО"
+    elif access:
+        tag = "✅ У тебя есть доступ"
+    elif not has_modules:
+        tag = "🔒 Скоро"
+    else:
+        tag = f"💳 ${course.get('price_usd', 0)} — доступ навсегда"
+
     text = f"{course['emoji']} *{course['title']}*\n{tag}\n\n{course['description']}"
     await callback.message.edit_text(
         text,
-        reply_markup=course_detail_kb(course_id, course["is_free"], course["category"]),
+        reply_markup=course_detail_kb(
+            course_id,
+            is_free,
+            course["category"],
+            has_access=access,
+            price_usd=course.get("price_usd"),
+            has_modules=has_modules,
+        ),
         parse_mode="Markdown",
     )
     await callback.answer()
@@ -248,6 +278,15 @@ async def launch_lesson(
         await message.answer("⚠️ Урок не найден")
         return
 
+    # Access-check для платных курсов
+    if not course["is_free"] and not await has_course_access(user_db_id, course_id):
+        await message.answer(
+            f"🔒 Этот курс доступен после покупки.\n\n"
+            f"Стоимость: ${course.get('price_usd', 35)} — доступ навсегда.\n\n"
+            f"Нажми на курс в каталоге чтобы оплатить.",
+        )
+        return
+
     await state.set_state(LearningState.in_lesson)
     await state.update_data(
         course_id=course_id,
@@ -258,6 +297,7 @@ async def launch_lesson(
         lesson_title=lesson["title"],
         lesson_plan=lesson.get("plan", ""),
         lesson_terms=lesson.get("terms", ""),
+        ai_model=course.get("ai_model"),
     )
 
     await message.answer(
@@ -279,6 +319,7 @@ async def launch_lesson(
             lesson_terms=lesson.get("terms", ""),
             student_history=student_history or None,
             student_profile=student_profile,
+            model=course.get("ai_model"),
         )
         cleaned, phase = strip_phase_marker(intro)
         cleaned, _ = strip_done_marker(cleaned)

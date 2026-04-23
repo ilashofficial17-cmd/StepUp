@@ -12,10 +12,27 @@ def category_courses_kb(category_id: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-def course_detail_kb(course_id: str, is_free: bool, category_id: str | None) -> InlineKeyboardMarkup:
+def course_detail_kb(
+    course_id: str,
+    is_free: bool,
+    category_id: str | None,
+    has_access: bool = False,
+    price_usd: int | None = None,
+    has_modules: bool = True,
+) -> InlineKeyboardMarkup:
     buttons = []
-    if is_free:
-        buttons.append([InlineKeyboardButton(text="▶️ Начать курс", callback_data=f"modules:{course_id}")])
+    # Бесплатный курс ИЛИ платный на который есть доступ — показываем «Начать»
+    if (is_free or has_access) and has_modules:
+        buttons.append([InlineKeyboardButton(
+            text="▶️ Начать курс", callback_data=f"modules:{course_id}"
+        )])
+    # Платный без доступа — кнопка покупки
+    elif not is_free and price_usd and has_modules:
+        buttons.append([InlineKeyboardButton(
+            text=f"💳 Купить за ${price_usd}",
+            callback_data=f"buy:{course_id}",
+        )])
+    # Заглушка «скоро» — если контента ещё нет
     else:
         buttons.append([InlineKeyboardButton(text="🔒 Скоро будет доступно", callback_data="soon")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
