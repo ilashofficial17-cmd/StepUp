@@ -495,6 +495,69 @@ async def cb_soon(callback: CallbackQuery):
 
 
 # ==========================
+# Покупка курса
+# ==========================
+
+@router.callback_query(F.data.startswith("buy:"))
+async def cb_buy_course(callback: CallbackQuery):
+    from payments.stripe_client import create_checkout_url, is_stripe_configured
+
+    course_id = callback.data.split(":")[1]
+    course = COURSES_BY_ID.get(course_id)
+    if not course or course["is_free"]:
+        await callback.answer("Курс недоступен", show_alert=True)
+        return
+
+    user_db_id = await get_or_create_user(
+        telegram_id=callback.from_user.id,
+        username=callback.from_user.username or "",
+        full_name=callback.from_user.full_name or "",
+    )
+
+    if await has_course_access(user_db_id, course_id):
+        await callback.answer("У тебя уже есть доступ к этому курсу ✅", show_alert=True)
+        return
+
+    price = course.get("price_usd", 0)
+
+    if not is_stripe_configured():
+        # Stripe пока не настроен — даём инструкцию
+        await callback.message.answer(
+            f"💳 *Покупка курса «{course['title']}»*\n\n"
+            f"Цена: ${price}\n\n"
+            "Оплата временно недоступна в боте — напиши в поддержку, "
+            "мы пришлём ссылку и выдадим доступ вручную.",
+            parse_mode="Markdown",
+        )
+        await callback.answer()
+        return
+
+    url = await create_checkout_url(
+        course_id=course_id,
+        course_title=course["title"],
+        price_usd=price,
+        telegram_id=callback.from_user.id,
+        user_db_id=user_db_id,
+    )
+    if not url:
+        await callback.message.answer(
+            "⚠️ Не удалось создать ссылку на оплату. Попробуй позже."
+        )
+        await callback.answer()
+        return
+
+    await callback.message.answer(
+        f"💳 *«{course['title']}» — ${price}*\n\n"
+        "Нажми на ссылку ниже, оплати картой. Доступ откроется автоматически через несколько секунд после оплаты.\n\n"
+        f"🔗 {url}\n\n"
+        "После оплаты вернись в бот и зайди в раздел курса — кнопка «Начать» будет активна.",
+        parse_mode="Markdown",
+        disable_web_page_preview=False,
+    )
+    await callback.answer()
+
+
+# ==========================
 # Конспекты пройденных уроков
 # ==========================
 
