@@ -403,6 +403,7 @@ INTRO_MODULES_BY_ID = {m["id"]: m for m in INTRO_MODULES}
 
 from content.paid_smm import SMM_COURSE, SMM_QUIZZES
 from content.paid_target import TARGET_COURSE, TARGET_QUIZZES
+from content.paid_vibe import VIBE_COURSE, VIBE_QUIZZES
 
 
 COURSES = [
@@ -430,7 +431,7 @@ COURSES = [
     {"id": "freelance", "title": "Фриланс и продажа услуг",  "emoji": "💼", "is_free": False, "category": "business",  "description": "Упакуй себя как специалиста, найди клиентов и выстрой доход.", "modules": []},
     {"id": "brand",     "title": "Личный бренд",             "emoji": "⭐", "is_free": False, "category": "business",  "description": "Позиционирование, экспертность и монетизация личного бренда.", "modules": []},
     {"id": "nocode",    "title": "No-code автоматизация",    "emoji": "🔧", "is_free": False, "category": "tech",      "description": "Make, n8n, Zapier — автоматизируй процессы без кода.", "modules": []},
-    {"id": "vibe",      "title": "Вайб-кодинг",              "emoji": "🤖", "is_free": False, "category": "tech",      "description": "Создавай продукты с ИИ: Cursor, Claude, v0. Без опыта в разработке.", "modules": []},
+    VIBE_COURSE,
 ]
 
 COURSES_BY_ID = {c["id"]: c for c in COURSES}
@@ -451,6 +452,7 @@ QUIZ_PASS_THRESHOLD = 2  # минимум правильных ответов и
 QUIZZES = {
     "smm": SMM_QUIZZES,
     "target": TARGET_QUIZZES,
+    "vibe": VIBE_QUIZZES,
     "intro": {
         "m1": [
             {
