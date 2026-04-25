@@ -401,6 +401,7 @@ INTRO_MODULES = [
 
 INTRO_MODULES_BY_ID = {m["id"]: m for m in INTRO_MODULES}
 
+from content.paid_copy import COPY_COURSE, COPY_QUIZZES
 from content.paid_smm import SMM_COURSE, SMM_QUIZZES
 from content.paid_target import TARGET_COURSE, TARGET_QUIZZES
 from content.paid_vibe import VIBE_COURSE, VIBE_QUIZZES
@@ -423,7 +424,7 @@ COURSES = [
     SMM_COURSE,
     TARGET_COURSE,
     {"id": "content",   "title": "Контент-маркетинг",        "emoji": "✍️", "is_free": False, "category": "promo",     "description": "Контент-стратегия, редполитика, дистрибуция и продвижение.", "modules": []},
-    {"id": "copy",      "title": "Копирайтинг",              "emoji": "📝", "is_free": False, "category": "promo",     "description": "Продающие тексты, посты, лендинги. Пишем так, чтобы покупали.", "modules": []},
+    COPY_COURSE,
     {"id": "email",     "title": "Email-маркетинг",          "emoji": "📧", "is_free": False, "category": "promo",     "description": "Рассылки, автоворонки, сегментация базы и аналитика.", "modules": []},
     {"id": "influence", "title": "Influence-маркетинг",      "emoji": "🌟", "is_free": False, "category": "promo",     "description": "Работа с блогерами, посевы, коллаборации и оценка эффективности.", "modules": []},
     {"id": "sales",     "title": "Автоматизация продаж",     "emoji": "⚙️", "is_free": False, "category": "business",  "description": "CRM, чат-боты, воронки продаж. Продавай системно и автоматически.", "modules": []},
@@ -453,6 +454,7 @@ QUIZZES = {
     "smm": SMM_QUIZZES,
     "target": TARGET_QUIZZES,
     "vibe": VIBE_QUIZZES,
+    "copy": COPY_QUIZZES,
     "intro": {
         "m1": [
             {
